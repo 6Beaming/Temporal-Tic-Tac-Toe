@@ -149,7 +149,7 @@ function App() {
         {board.map((cell, index) => {
           let displayContent = cell;
           if (index === deadIndex) {
-            displayContent = '△';
+            displayContent = '🙅';
           }
 
           // Check if this specific cell is part of the winning line

@@ -55,21 +55,19 @@
   font-weight: bold;
 }
 
-/* Make the winning letters pop and glow */
 .winning-cell {
-  color: #2ed573 !important; /* A bright, success green */
+  color: #2ed573 !important;
   text-shadow: 0 0 15px rgba(46, 213, 115, 0.6);
   transform: scale(1.05);
   z-index: 1;
 }
 
-/* Base style for the strike-through line */
 .strike-line {
   position: absolute;
   background-color: #2ed573;
   border-radius: 5px;
   z-index: 10;
-  pointer-events: none; /* So it doesn't block clicks */
+  pointer-events: none;
   transform-origin: center;
   animation: drawLine 0.4s ease-out forwards;
 }
@@ -80,7 +78,6 @@
 }
 
 /* Hardcoded coordinates for all 8 possible lines */
-/* Assumes 100px cells and 5px gaps */
 .strike-row-0 { top: 48px; left: 10px; width: 290px; height: 8px; }
 .strike-row-1 { top: 153px; left: 10px; width: 290px; height: 8px; }
 .strike-row-2 { top: 258px; left: 10px; width: 290px; height: 8px; }
