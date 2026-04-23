@@ -5,31 +5,29 @@ import random
 
 app = FastAPI()
 
-# Pydantic is used to strictly define the expected JSON payload (like TypeScript interfaces)
 class GameState(BaseModel):
     mode: str
     board: list[str | None]
+    x_moves: list[int] 
+    o_moves: list[int] 
+    dead_index: int | None = None # NEW: Accept the dead index
 
 @app.post("/calculate-move")
 def calculate_move(state: GameState):
     print(f"[Python AI] Received board for mode: {state.mode}")
     
-    # Easy Mode Logic: Pick a random empty square
     if state.mode == "easy":
-        # Find all indices where the board is None
-        empty_squares = [i for i, cell in enumerate(state.board) if cell is None]
+        # NEW: Filter out the dead_index so the AI cannot choose the triangle spot
+        empty_squares = [i for i, cell in enumerate(state.board) if cell is None and i != state.dead_index]
         
         if not empty_squares:
             return {"status": "error", "message": "Board is full"}
             
-        # Choose a random move using numpy/random
         ai_move = random.choice(empty_squares)
         
         return {
             "status": "success", 
             "ai_move": ai_move,
-            "message": f"Python AI calculated move: {ai_move}"
         }
     
-    # Placeholder for Hard Mode
     return {"status": "pending", "message": "Hard mode Minimax not implemented yet"}
