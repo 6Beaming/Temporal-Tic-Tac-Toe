@@ -11,6 +11,22 @@ The website has four modes to play with:
 3. Defeat AI with a helper (analyze the possibilities to win when placing a piece)
 4. Play with your friend (Local Multiplayer)
 
+<hr>
+
+Project Structure:
+
+Temporal-Tic-Tac-Toe/
+
+├── frontend/          (React + TypeScript)
+
+├── api-gateway/       (Node.js + Express + TypeScript)
+
+├── ai-service/        (Python + FastAPI)
+
+├── .gitignore         (Root gitignore)
+
+└── README.md          (Project documentation)
+
 Tech Stack: 
 - Frontend:
   - Core Library: React
