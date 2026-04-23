@@ -4,27 +4,38 @@ import cors from 'cors';
 const app = express();
 const PORT = 5000;
 
-// Middleware
-app.use(cors()); // Allows your React app (port 5173) to communicate with this server
-app.use(express.json()); // Automatically parses incoming JSON payloads
+app.use(cors()); 
+app.use(express.json()); 
 
-// The API Endpoint
-app.post('/api/v1/game/move', (req: Request, res: Response) => {
-    // Destructure the data sent from React
+app.post('/api/v1/game/move', async (req: Request, res: Response) => {
     const { mode, board } = req.body;
+    console.log(`[Node.js Gateway] Received from React. Forwarding to Python...`);
 
-    console.log(`[API Gateway] Received request for mode: ${mode}`);
-    console.log('[API Gateway] Current Board state:', board);
+    try {
+        // Node.js makes an internal API call to the Python service
+        const pythonResponse = await fetch('http://localhost:8000/calculate-move', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mode: mode, board: board })
+        });
 
-    // Right now, we just acknowledge receipt. 
-    // Later, this router will forward the payload to your Python AI.
-    res.json({ 
-        status: "success", 
-        message: "Data successfully received by the Node.js API Gateway!",
-        received_mode: mode
-    });
+        // Get the response back from Python
+        const aiData = await pythonResponse.json();
+        console.log(`[Node.js Gateway] Received response from Python AI:`, aiData);
+
+        // Send the final result back to the React frontend
+        res.json({
+            status: "success",
+            message: "Successfully routed through Node to Python and back!",
+            ai_move: aiData.ai_move
+        });
+
+    } catch (error) {
+        console.error("[Node.js Gateway] Error communicating with Python:", error);
+        res.status(500).json({ status: "error", message: "AI Service Down" });
+    }
 });
 
 app.listen(PORT, () => {
-    console.log(`API Gateway is running and listening on http://localhost:${PORT}`);
+    console.log(`API Gateway is running on http://localhost:${PORT}`);
 });
