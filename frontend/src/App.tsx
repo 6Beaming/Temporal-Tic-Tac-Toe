@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 
-// MODIFIED: Now returns both the winner ('X' or 'O') and the winning line array
+// Returns both the winner ('X' or 'O') and the winning line array
 function calculateWinner(squares: (string | null)[]) {
   const lines = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8], 
@@ -17,7 +17,7 @@ function calculateWinner(squares: (string | null)[]) {
   return null; 
 }
 
-// NEW: Helper to translate the winning line array into a CSS class name
+// Helper to translate the winning line array into a CSS class name
 function getLineClass(line: number[]) {
   const key = line.join(',');
   const lineMap: Record<string, string> = {
@@ -52,7 +52,7 @@ function App() {
   const isDraw = !winner && board.every(cell => cell !== null);
   const isGameStart = board.every(cell => cell === null);
 
-  // FIXED: If there is a winner, force both of these to null so the UI freezes normally
+  // If there is a winner, force both of these to null so the UI freezes normally
   const deadIndex = winner ? null : tempDeadIndex;
   const pulsingIndex = winner ? null : (isXNext 
     ? (oMoves.length === 3 ? oMoves[0] : null) 
@@ -86,12 +86,23 @@ function App() {
           const response = await fetch('http://localhost:5000/api/v1/game/move', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ mode: "easy", board: board, x_moves: xMoves, o_moves: oMoves })
+            body: JSON.stringify({ 
+              mode: "easy", 
+              board: board, 
+              x_moves: xMoves, 
+              o_moves: oMoves, 
+              dead_index: deadIndex 
+            }) 
           });
 
           const data = await response.json();
           
           if (data.status === "success" && data.ai_move !== undefined) {
+            const isFirstMove = board.every(cell => cell === null);
+            
+            // If it is the first move, use 0ms. Otherwise, use the standard 500ms delay.
+            const thinkingTime = isFirstMove ? 0 : 500;
+
             setTimeout(() => {
               const newBoard = [...board];
               const newOMoves = [...oMoves];
@@ -109,7 +120,7 @@ function App() {
               setBoard(newBoard);
               setOMoves(newOMoves);
               setIsXNext(true); 
-            }, 500);
+            }, thinkingTime); // Pass the dynamic variable here
           }
         } catch (error) {
           console.error("Error getting AI move:", error);
@@ -117,7 +128,7 @@ function App() {
       };
       getAIMove();
     }
-  }, [isXNext, board, winner, isDraw, xMoves, oMoves]);
+  }, [isXNext, board, winner, isDraw, xMoves, oMoves, deadIndex]);
 
   let statusMessage;
   if (winner) {
@@ -168,7 +179,7 @@ function App() {
           );
         })}
         
-        {/* NEW: Render the animated strike-through line if there is a winner */}
+        {/* Render the animated strike-through line if there is a winner */}
         {winningLine && <div className={`strike-line ${getLineClass(winningLine)}`}></div>}
       </div>
 
