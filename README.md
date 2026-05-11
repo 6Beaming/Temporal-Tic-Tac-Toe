@@ -6,11 +6,10 @@ The game is a small variant derived from standard Tic-Tac-Toe. The rules are as 
 3. You cannot place a piece on the position where the piece **just disappeared**.
 4. The starting player is randomized
 
-The website has four modes to play with:
-1. Easy AI
-2. Hard AI
-3. Defeat AI with a helper (analyze the possibilities to win when placing a piece)
-4. Play with your friend (Local Multiplayer)
+The website has two modes to play with:
+1. Play with a bot
+   * with an option to defeat bot with a helper (analyze the possibilities to win when placing a piece,  based on 100 Monte Carlo simulations per cell)
+2. Play with your friend (Local Multiplayer)
 
 <hr>
 

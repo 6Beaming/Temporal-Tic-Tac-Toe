@@ -28,7 +28,7 @@ def check_winner(board: list[str | None]):
 def calculate_move(state: GameState):
     print(f"[Python AI] Received board for mode: {state.mode}")
     
-    if state.mode == "easy":
+    if state.mode == "bot":
         empty_squares = [i for i, cell in enumerate(state.board) if cell is None and i != state.dead_index]
         
         if not empty_squares:

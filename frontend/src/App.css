@@ -112,3 +112,144 @@
   from { transform: scale(0) rotate(-45deg); opacity: 0; }
   to { transform: scale(1) rotate(-45deg); opacity: 1; }
 }
+
+/* --- MAIN MENU STYLES --- */
+.menu-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.title {
+  font-size: 3rem;
+  margin-top: 8rem;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #7f8c8d;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+}
+
+.menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.menu-btn {
+  padding: 15px 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: none;
+}
+
+.menu-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.menu-btn.primary {
+  background-color: #2c3e50;
+  color: white;
+  margin-top: 100px;
+}
+
+.menu-btn.secondary {
+  background-color: white;
+  color: #2c3e50;
+  border: 2px solid #2c3e50;
+}
+
+/* --- GAME SCREEN STYLES --- */
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  color: #7f8c8d;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.back-btn:hover {
+  color: #2c3e50;
+  text-decoration: underline;
+}
+
+/* --- ASSIST MODE STYLES --- */
+.assist-toggle {
+  margin-top: 25px;
+  color: #2c3e50;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: flex-start;
+  cursor: pointer;
+  justify-content: center;
+}
+
+.toggle-label input {
+  margin-right: 12px;
+  margin-top: 5px;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+.toggle-text {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.toggle-maintext {
+  font-size: 1.05rem;
+  font-weight: bold;
+}
+
+.toggle-subtext {
+  font-size: 0.8rem;
+  color: #7f8c8d;
+  margin-top: 2px;
+}
+
+.cell {
+  position: relative; 
+}
+
+.hint-score {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.1rem;
+  font-weight: 800;
+  pointer-events: none; /* Prevents the text from interfering with clicks */
+  opacity: 0.85;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.8); /* Ensures it's readable */
+}
+
+/* Ensure the game container can relatively position the back button */
+.game-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 80vh;
+  padding-top: 40px; /* Space for the back button */
+}
