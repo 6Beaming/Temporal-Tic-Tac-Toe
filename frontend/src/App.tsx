@@ -327,7 +327,7 @@ function App() {
                 <span 
                   className="hint-score"
                   // Dynamically color the text based on how good the move is
-                  style={{ color: probability >= 80 ? '#2ed573' : probability >= 50 ? '#ffa502' : '#a4b0be' }}
+                  style={{ color: probability === 0 ? '#ff4757' : probability >= 80 ? '#2ed573' : probability >= 50 ? '#ffa502' : '#a4b0be' }}
                 >
                   {probability}%
                 </span>
