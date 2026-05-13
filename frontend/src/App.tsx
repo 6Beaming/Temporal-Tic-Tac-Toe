@@ -188,7 +188,7 @@ function App() {
     if (gameMode === 'bot' && !isXNext && !winner && !isDraw) {
       const getAIMove = async () => {
         try {
-          const response = await fetch('http://localhost:5000/api/v1/game/move', {
+          const response = await fetch('https://temporal-tic-tac-toe-3.onrender.com/api/v1/game/move', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
