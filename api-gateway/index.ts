@@ -14,7 +14,7 @@ app.post('/api/v1/game/move', async (req: Request, res: Response) => {
 
     try {
         // Node.js makes an internal API call to the Python service
-        const pythonResponse = await fetch('http://localhost:8000/calculate-move', {
+        const pythonResponse = await fetch('https://temporal-tic-tac-toe.onrender.com/calculate-move', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             // Passing the new arrays into the Python payload
@@ -49,5 +49,5 @@ app.post('/api/v1/game/move', async (req: Request, res: Response) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`API Gateway is running on http://localhost:${PORT}`);
+    console.log(`API Gateway is running on https://temporal-tic-tac-toe.onrender.com`);
 });
