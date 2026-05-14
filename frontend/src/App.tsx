@@ -35,6 +35,7 @@ function App() {
   const [xMoves, setXMoves] = useState<number[]>([]);
   const [oMoves, setOMoves] = useState<number[]>([]);
   const [isBotThinking, setIsBotThinking] = useState<boolean>(false);
+  const [showLoader, setShowLoader] = useState<boolean>(false);
 
   const boardForWinCheck = [...board];
   const tempDeadIndex = isXNext 
@@ -187,12 +188,19 @@ function App() {
 
   useEffect(() => {
     if (gameMode === 'bot' && !isXNext && !winner && !isDraw) {
+      // Create a timer variable we can track
+      let loaderTimer: ReturnType<typeof setTimeout>;
+
       const getAIMove = async () => {
-        // 1. Turn on the loading overlay
-        setIsBotThinking(true); 
+        setIsBotThinking(true); // 1. Lock the board immediately
+        
+        // 2. Start the stopwatch: Only show the spinner if 800ms passes!
+        loaderTimer = setTimeout(() => {
+          setShowLoader(true); 
+        }, 800);
         
         try {
-          const response = await fetch('https://temporal-tic-tac-toe-3.onrender.com/api/v1/game/move', {
+          const response = await fetch('https://temporal-tic-tac-toe.onrender.com/api/v1/game/move', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -228,17 +236,24 @@ function App() {
               setOMoves(newOMoves);
               setIsXNext(true); 
               
-              // 2. Turn off the loading overlay once the move is played
+              // 3. Move is done! Cancel the stopwatch and hide the loader
+              clearTimeout(loaderTimer);
+              setShowLoader(false);
               setIsBotThinking(false); 
             }, thinkingTime);
           }
         } catch (error) {
           console.error("Error getting Bot move:", error);
-          // Ensure we turn off loading even if the server crashes
+          // 4. Cancel the stopwatch if the server crashes
+          clearTimeout(loaderTimer);
+          setShowLoader(false);
           setIsBotThinking(false); 
         }
       };
       getAIMove();
+
+      // Cleanup function to prevent memory leaks if the component unmounts early
+      return () => clearTimeout(loaderTimer);
     }
   }, [isXNext, board, winner, isDraw, xMoves, oMoves, deadIndex, gameMode]);
 
@@ -312,8 +327,8 @@ function App() {
 
       <div className="board-container" style={{ position: 'relative' }}>
         
-        {/* The Loading Overlay that covers the board */}
-        {isBotThinking && (
+        {/* The Loading Overlay only shows if showLoader is true (after 800ms) */}
+        {showLoader && (
           <div className="loading-overlay">
             <div className="spinner"></div>
             <p className="loading-text">Bot is thinking...<br/><span style={{fontSize: '0.8rem'}}>(First move may take 50s to wake up the server)</span></p>
