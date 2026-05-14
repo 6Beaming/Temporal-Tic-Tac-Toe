@@ -331,7 +331,7 @@ function App() {
         {showLoader && (
           <div className="loading-overlay">
             <div className="spinner"></div>
-            <p className="loading-text">Bot is thinking...<br/><span style={{fontSize: '0.8rem'}}>(First move may take 50s to wake up the server)</span></p>
+            <p className="loading-text">Bot is thinking...<br/><span style={{fontSize: '0.8rem'}}>(First move may take 50 seconds to wake up the server)</span></p>
           </div>
         )}
 
