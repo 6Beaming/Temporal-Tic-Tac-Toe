@@ -34,6 +34,7 @@ function App() {
   const [isXNext, setIsXNext] = useState<boolean>(() => Math.random() < 0.5); 
   const [xMoves, setXMoves] = useState<number[]>([]);
   const [oMoves, setOMoves] = useState<number[]>([]);
+  const [isBotThinking, setIsBotThinking] = useState<boolean>(false);
 
   const boardForWinCheck = [...board];
   const tempDeadIndex = isXNext 
@@ -187,6 +188,9 @@ function App() {
   useEffect(() => {
     if (gameMode === 'bot' && !isXNext && !winner && !isDraw) {
       const getAIMove = async () => {
+        // 1. Turn on the loading overlay
+        setIsBotThinking(true); 
+        
         try {
           const response = await fetch('https://temporal-tic-tac-toe-3.onrender.com/api/v1/game/move', {
             method: 'POST',
@@ -223,10 +227,15 @@ function App() {
               setBoard(newBoard);
               setOMoves(newOMoves);
               setIsXNext(true); 
+              
+              // 2. Turn off the loading overlay once the move is played
+              setIsBotThinking(false); 
             }, thinkingTime);
           }
         } catch (error) {
           console.error("Error getting Bot move:", error);
+          // Ensure we turn off loading even if the server crashes
+          setIsBotThinking(false); 
         }
       };
       getAIMove();
@@ -301,41 +310,50 @@ function App() {
         {statusMessage}
       </div>
 
-      <div className="board">
-        {board.map((cell, index) => {
-          let displayContent = cell;
-          if (index === deadIndex) {
-            displayContent = '🙅';
-          }
-          const isWinningCell = winningLine?.includes(index);
-          
-          // Determine if we should show the probability
-          const showHint = assistMode && isXNext && !board[index] && index !== deadIndex && !winner;
-          const probability = showHint ? getMoveProbability(index) : null;
+      <div className="board-container" style={{ position: 'relative' }}>
+        
+        {/* The Loading Overlay that covers the board */}
+        {isBotThinking && (
+          <div className="loading-overlay">
+            <div className="spinner"></div>
+            <p className="loading-text">Bot is thinking...<br/><span style={{fontSize: '0.8rem'}}>(First move may take 50s to wake up the server)</span></p>
+          </div>
+        )}
 
-          return (
-            <button 
-              key={index} 
-              className={`cell ${index === pulsingIndex ? 'pulsing' : ''} ${index === deadIndex ? 'dead-triangle' : ''} ${isWinningCell ? 'winning-cell' : ''}`} 
-              onClick={() => handleClick(index)}
-              disabled={!!winner || !!isDraw} 
-            >
-              {displayContent}
-              
-              {/* NEW: Render the probability score */}
-              {probability !== null && (
-                <span 
-                  className="hint-score"
-                  // Dynamically color the text based on how good the move is
-                  style={{ color: probability === 0 ? '#ff4757' : probability >= 80 ? '#2ed573' : probability >= 50 ? '#ffa502' : '#a4b0be' }}
-                >
-                  {probability}%
-                </span>
-              )}
-            </button>
-          );
-        })}
-        {winningLine && <div className={`strike-line ${getLineClass(winningLine)}`}></div>}
+        <div className="board">
+          {board.map((cell, index) => {
+            let displayContent = cell;
+            if (index === deadIndex) {
+              displayContent = '🙅';
+            }
+            const isWinningCell = winningLine?.includes(index);
+            
+            const showHint = assistMode && isXNext && !board[index] && index !== deadIndex && !winner;
+            const probability = showHint ? getMoveProbability(index) : null;
+
+            return (
+              <button 
+                key={index} 
+                className={`cell ${index === pulsingIndex ? 'pulsing' : ''} ${index === deadIndex ? 'dead-triangle' : ''} ${isWinningCell ? 'winning-cell' : ''}`} 
+                onClick={() => handleClick(index)}
+                // UPDATED: Disable the buttons while the bot is thinking so the user can't click!
+                disabled={!!winner || !!isDraw || isBotThinking} 
+              >
+                {displayContent}
+                
+                {probability !== null && (
+                  <span 
+                    className="hint-score"
+                    style={{ color: probability === 0 ? '#ff4757' : probability >= 80 ? '#2ed573' : probability >= 50 ? '#ffa502' : '#a4b0be' }}
+                  >
+                    {probability}%
+                  </span>
+                )}
+              </button>
+            );
+          })}
+          {winningLine && <div className={`strike-line ${getLineClass(winningLine)}`}></div>}
+        </div>
       </div>
 
       {gameMode === 'bot' && !winner && (
