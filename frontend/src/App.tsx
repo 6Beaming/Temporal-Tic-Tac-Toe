@@ -200,7 +200,7 @@ function App() {
         }, 800);
         
         try {
-          const response = await fetch('https://temporal-tic-tac-toe.onrender.com/api/v1/game/move', {
+          const response = await fetch('https://temporal-tic-tac-toe-3.onrender.com/api/v1/game/move', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -244,6 +244,7 @@ function App() {
           }
         } catch (error) {
           console.error("Error getting Bot move:", error);
+          alert("The Bot server encountered an error: " + error);
           // 4. Cancel the stopwatch if the server crashes
           clearTimeout(loaderTimer);
           setShowLoader(false);
