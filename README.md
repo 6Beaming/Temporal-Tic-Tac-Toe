@@ -5,11 +5,10 @@
 Temporal Tic-Tac-Toe is a strategic variant derived from the classic game, adding a sliding window of historical moves to create dynamic, continuously evolving gameplay.
 
 ## Rules
-1. The game is played on a standard 3×3 board. A player wins by getting three pieces in a row.
-2. **The Catch:** Each player can only have **three pieces on the board at a time**.
-3. **Temporal Decay:** After all three of your pieces are placed, before you can place a new piece, **your earliest placed piece will disappear**.
-4. **The Dead Zone:** You cannot place a piece on the exact position where a piece **just disappeared** on that same turn.
-5. The starting player is randomized each game.
+- Match 3 in a row to win, just like standard Tic-Tac-Toe.
+- You can only have at most **3 pieces** on the board at a time.
+- When you place your 4th piece, your **oldest piece disappears**.
+- **Dead Zone:** You cannot place a piece on the exact square where a piece just vanished *this turn*.
 
 ## Game Modes
 1. **Play with a Bot:** Challenge a custom heuristic AI.

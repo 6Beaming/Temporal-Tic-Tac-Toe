@@ -302,6 +302,7 @@ function App() {
       <div className="menu-container">
         <h1 className="title">Temporal Tic-Tac-Toe</h1>
         <p className="subtitle">The classic game, but pieces vanish after 3 turns.</p>
+
         <div className="menu-buttons">
           <button className="menu-btn primary" onClick={() => startGame('bot')}>
             Play with Bot
@@ -309,6 +310,17 @@ function App() {
           <button className="menu-btn secondary" onClick={() => startGame('friend')}>
             Play with Friend
           </button>
+        </div>
+        
+        {/* Rules Section */}
+        <div className="menu-rules">
+          <h3>Game Rules</h3>
+          <ul>
+            <li>Match 3 in a row to win, just like standard Tic-Tac-Toe.</li>
+            <li>You can only have at most <strong>3 pieces</strong> on the board at a time.</li>
+            <li>When you place your 4th piece, your <strong>oldest piece disappears</strong>.</li>
+            <li><strong>Dead Zone:</strong> You cannot place a piece on the exact square where a piece just vanished this turn.</li>
+          </ul>
         </div>
       </div>
     );
