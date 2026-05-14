@@ -372,6 +372,21 @@ function App() {
         </div>
       </div>
 
+      <div className="game-legend">
+        <div className="legend-item">
+          <div className="legend-cell">🙅</div>
+          <div className="legend-text">
+            <strong>Dead Zone:</strong> You cannot place a piece where one just vanished.
+          </div>
+        </div>
+        <div className="legend-item">
+          <div className="legend-cell pulsing">X</div>
+          <div className="legend-text">
+            <strong>Flashing Piece:</strong> The oldest piece on the board. It will vanish next!
+          </div>
+        </div>
+      </div>
+
       {gameMode === 'bot' && !winner && (
          <div className="assist-toggle">
            <label className="toggle-label">
