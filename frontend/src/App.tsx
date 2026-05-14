@@ -407,7 +407,7 @@ function App() {
             </div>
           </div>
           <div className="legend-item">
-            <div className="legend-cell pulsing">X</div>
+            <div className="legend-cell pulsing">O</div>
             <div className="legend-text">
               <strong>Flashing Piece:</strong> The oldest piece on the board. It will vanish next!
             </div>
