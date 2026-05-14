@@ -3,17 +3,17 @@ import './App.css';
 
 function calculateWinner(squares: (string | null)[]) {
   const lines = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8], 
-    [0, 3, 6], [1, 4, 7], [2, 5, 8], 
-    [0, 4, 8], [2, 4, 6]  
+    [0, 1, 2], [3, 4, 5], [6, 7, 8],
+    [0, 3, 6], [1, 4, 7], [2, 5, 8],
+    [0, 4, 8], [2, 4, 6]
   ];
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return { winner: squares[a], line: lines[i] }; 
+      return { winner: squares[a], line: lines[i] };
     }
   }
-  return null; 
+  return null;
 }
 
 function getLineClass(line: number[]) {
@@ -29,19 +29,19 @@ function getLineClass(line: number[]) {
 function App() {
   const [gameMode, setGameMode] = useState<'bot' | 'friend' | null>(null);
   const [assistMode, setAssistMode] = useState<boolean>(false);
-  
+
   const [board, setBoard] = useState<(string | null)[]>(Array(9).fill(null));
-  const [isXNext, setIsXNext] = useState<boolean>(() => Math.random() < 0.5); 
+  const [isXNext, setIsXNext] = useState<boolean>(() => Math.random() < 0.5);
   const [xMoves, setXMoves] = useState<number[]>([]);
   const [oMoves, setOMoves] = useState<number[]>([]);
   const [isBotThinking, setIsBotThinking] = useState<boolean>(false);
   const [showLoader, setShowLoader] = useState<boolean>(false);
 
   const boardForWinCheck = [...board];
-  const tempDeadIndex = isXNext 
-    ? (xMoves.length === 3 ? xMoves[0] : null) 
+  const tempDeadIndex = isXNext
+    ? (xMoves.length === 3 ? xMoves[0] : null)
     : (oMoves.length === 3 ? oMoves[0] : null);
-    
+
   if (tempDeadIndex !== null) {
     boardForWinCheck[tempDeadIndex] = null;
   }
@@ -49,20 +49,20 @@ function App() {
   const winningData = calculateWinner(boardForWinCheck);
   const winner = winningData?.winner;
   const winningLine = winningData?.line;
-  
+
   const isDraw = !winner && board.every(cell => cell !== null);
   const isGameStart = board.every(cell => cell === null);
 
   const deadIndex = winner ? null : tempDeadIndex;
-  const pulsingIndex = winner ? null : (isXNext 
-    ? (oMoves.length === 3 ? oMoves[0] : null) 
+  const pulsingIndex = winner ? null : (isXNext
+    ? (oMoves.length === 3 ? oMoves[0] : null)
     : (xMoves.length === 3 ? xMoves[0] : null));
 
 
   const getMoveProbability = (targetIndex: number) => {
     // 1. Immediate Win? (Guaranteed 100%)
     const testBoardX = [...board];
-    if (xMoves.length === 3) testBoardX[xMoves[0]] = null; 
+    if (xMoves.length === 3) testBoardX[xMoves[0]] = null;
     testBoardX[targetIndex] = 'X';
     if (calculateWinner(testBoardX)?.winner === 'X') return 100;
 
@@ -77,7 +77,7 @@ function App() {
       const boardAfterO = [...testBoardX];
       if (oDeadIdx !== null) boardAfterO[oDeadIdx] = null; // O's oldest decays
       boardAfterO[oMove] = 'O';
-      
+
       // If O playing here results in a win, X's original move is a fatal blunder
       if (calculateWinner(boardAfterO)?.winner === 'O') {
         return 0; // 0% Probability 
@@ -86,9 +86,9 @@ function App() {
 
     // 3. Critical Block? (Guaranteed 95% to force player attention)
     const testBoardO = [...board];
-    if (oMoves.length === 3) testBoardO[oMoves[0]] = null; 
+    if (oMoves.length === 3) testBoardO[oMoves[0]] = null;
     testBoardO[targetIndex] = 'O';
-    if (calculateWinner(testBoardO)?.winner === 'O') return 95; 
+    if (calculateWinner(testBoardO)?.winner === 'O') return 95;
 
     // 4. Monte Carlo Simulation (Calculates Actual Probability)
     let wins = 0;
@@ -156,34 +156,34 @@ function App() {
   };
 
   const handleClick = (index: number) => {
-    if (board[index] || winner) return; 
+    if (board[index] || winner) return;
     if (gameMode === 'bot' && !isXNext) return;
 
     const currentPlayer = isXNext ? 'X' : 'O';
     const activeMovesQueue = isXNext ? xMoves : oMoves;
-    
+
     const newBoard = [...board];
     const newMovesQueue = [...activeMovesQueue];
 
     if (newMovesQueue.length === 3) {
-      const expiredIndex = newMovesQueue.shift(); 
+      const expiredIndex = newMovesQueue.shift();
       if (expiredIndex !== undefined) {
-        newBoard[expiredIndex] = null; 
+        newBoard[expiredIndex] = null;
       }
     }
 
-    newBoard[index] = currentPlayer; 
-    newMovesQueue.push(index); 
-    
+    newBoard[index] = currentPlayer;
+    newMovesQueue.push(index);
+
     setBoard(newBoard);
-    
+
     if (isXNext) {
       setXMoves(newMovesQueue);
     } else {
       setOMoves(newMovesQueue);
     }
-    
-    setIsXNext(!isXNext); 
+
+    setIsXNext(!isXNext);
   };
 
   useEffect(() => {
@@ -193,27 +193,27 @@ function App() {
 
       const getAIMove = async () => {
         setIsBotThinking(true); // 1. Lock the board immediately
-        
+
         // 2. Start the stopwatch: Only show the spinner if 800ms passes!
         loaderTimer = setTimeout(() => {
-          setShowLoader(true); 
+          setShowLoader(true);
         }, 800);
-        
+
         try {
           const response = await fetch('https://temporal-tic-tac-toe-3.onrender.com/api/v1/game/move', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              mode: "bot", 
-              board: board, 
-              x_moves: xMoves, 
-              o_moves: oMoves, 
-              dead_index: deadIndex 
-            }) 
+            body: JSON.stringify({
+              mode: "bot",
+              board: board,
+              x_moves: xMoves,
+              o_moves: oMoves,
+              dead_index: deadIndex
+            })
           });
 
           const data = await response.json();
-          
+
           if (data.status === "success" && data.ai_move !== undefined) {
             const isFirstMove = board.every(cell => cell === null);
             const thinkingTime = isFirstMove ? 0 : 500;
@@ -221,25 +221,25 @@ function App() {
             setTimeout(() => {
               const newBoard = [...board];
               const newOMoves = [...oMoves];
-              
+
               if (newOMoves.length === 3) {
                 const expiredIndex = newOMoves.shift();
                 if (expiredIndex !== undefined) {
                   newBoard[expiredIndex] = null;
                 }
               }
-              
-              newBoard[data.ai_move] = 'O'; 
+
+              newBoard[data.ai_move] = 'O';
               newOMoves.push(data.ai_move);
-              
+
               setBoard(newBoard);
               setOMoves(newOMoves);
-              setIsXNext(true); 
-              
+              setIsXNext(true);
+
               // 3. Move is done! Cancel the stopwatch and hide the loader
               clearTimeout(loaderTimer);
               setShowLoader(false);
-              setIsBotThinking(false); 
+              setIsBotThinking(false);
             }, thinkingTime);
           }
         } catch (error) {
@@ -248,7 +248,7 @@ function App() {
           // 4. Cancel the stopwatch if the server crashes
           clearTimeout(loaderTimer);
           setShowLoader(false);
-          setIsBotThinking(false); 
+          setIsBotThinking(false);
         }
       };
       getAIMove();
@@ -281,7 +281,7 @@ function App() {
     setBoard(Array(9).fill(null));
     setXMoves([]);
     setOMoves([]);
-    setIsXNext(Math.random() < 0.5); 
+    setIsXNext(Math.random() < 0.5);
   };
 
   const startGame = (mode: 'bot' | 'friend') => {
@@ -294,7 +294,7 @@ function App() {
     setBoard(Array(9).fill(null));
     setXMoves([]);
     setOMoves([]);
-    setAssistMode(false); 
+    setAssistMode(false);
   };
   // --- Screen 1: Main Menu ---
   if (!gameMode) {
@@ -321,89 +321,101 @@ function App() {
       </button>
 
       <h2>{gameMode === 'bot' ? 'You vs Bot🤖' : 'Local 2-Player'}</h2>
-      
+
       <div className={`status ${winner || isDraw ? 'game-over' : ''}`}>
         {statusMessage}
       </div>
 
-      <div className="board-container" style={{ position: 'relative' }}>
-        
-        {/* The Loading Overlay only shows if showLoader is true (after 800ms) */}
-        {showLoader && (
-          <div className="loading-overlay">
-            <div className="spinner"></div>
-            <p className="loading-text">Bot is thinking...<br/><span style={{fontSize: '0.8rem'}}>(First move may take 50 seconds to wake up the server)</span></p>
-          </div>
-        )}
+      {/* The Wrapper holds everything */}
+      <div className="board-and-legend-wrapper">
 
-        <div className="board">
-          {board.map((cell, index) => {
-            let displayContent = cell;
-            if (index === deadIndex) {
-              displayContent = '🙅';
-            }
-            const isWinningCell = winningLine?.includes(index);
-            
-            const showHint = assistMode && isXNext && !board[index] && index !== deadIndex && !winner;
-            const probability = showHint ? getMoveProbability(index) : null;
+        {/* The Center Column locks the Board & Assist Toggle or Play Again together */}
+        <div className="center-column">
 
-            return (
-              <button 
-                key={index} 
-                className={`cell ${index === pulsingIndex ? 'pulsing' : ''} ${index === deadIndex ? 'dead-triangle' : ''} ${isWinningCell ? 'winning-cell' : ''}`} 
-                onClick={() => handleClick(index)}
-                // UPDATED: Disable the buttons while the bot is thinking so the user can't click!
-                disabled={!!winner || !!isDraw || isBotThinking} 
-              >
-                {displayContent}
-                
-                {probability !== null && (
-                  <span 
-                    className="hint-score"
-                    style={{ color: probability === 0 ? '#ff4757' : probability >= 80 ? '#2ed573' : probability >= 50 ? '#ffa502' : '#a4b0be' }}
+          <div className="board-container" style={{ position: 'relative' }}>
+            {showLoader && (
+              <div className="loading-overlay">
+                <div className="spinner"></div>
+                <p className="loading-text">Bot is thinking...<br /><span style={{ fontSize: '0.8rem' }}>(First move may take 50 seconds to wake up the server)</span></p>
+              </div>
+            )}
+
+            <div className="board">
+              {board.map((cell, index) => {
+                let displayContent = cell;
+                if (index === deadIndex) {
+                  displayContent = '🙅';
+                }
+                const isWinningCell = winningLine?.includes(index);
+
+                const showHint = assistMode && isXNext && !board[index] && index !== deadIndex && !winner;
+                const probability = showHint ? getMoveProbability(index) : null;
+
+                return (
+                  <button
+                    key={index}
+                    className={`cell ${index === pulsingIndex ? 'pulsing' : ''} ${index === deadIndex ? 'dead-triangle' : ''} ${isWinningCell ? 'winning-cell' : ''}`}
+                    onClick={() => handleClick(index)}
+                    disabled={!!winner || !!isDraw || isBotThinking}
                   >
-                    {probability}%
-                  </span>
-                )}
+                    {displayContent}
+
+                    {probability !== null && (
+                      <span
+                        className="hint-score"
+                        style={{ color: probability === 0 ? '#ff4757' : probability >= 80 ? '#2ed573' : probability >= 50 ? '#ffa502' : '#a4b0be' }}
+                      >
+                        {probability}%
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+              {winningLine && <div className={`strike-line ${getLineClass(winningLine)}`}></div>}
+            </div>
+
+            {/* Assist Toggle */}
+            {gameMode === 'bot' && !winner && (
+              <div className="assist-toggle">
+                <label className="toggle-label">
+                  <input type="checkbox" checked={assistMode} onChange={(e) => setAssistMode(e.target.checked)} />
+                  <div className="toggle-text">
+                    <span className="toggle-maintext">Show Win Probability to Defeat the Bot</span>
+                    <span className="toggle-subtext">(based on 100 Monte Carlo simulations per cell)</span>
+                  </div>
+                </label>
+              </div>
+            )}
+
+            {/* Play Again */}
+            {(winner || isDraw) && (
+              <button className="reset-button" onClick={resetGame} style={{ marginTop: '20px', padding: '10px 20px', fontSize: '1.2rem', cursor: 'pointer' }}>
+                Play Again
               </button>
-            );
-          })}
-          {winningLine && <div className={`strike-line ${getLineClass(winningLine)}`}></div>}
-        </div>
-      </div>
+            )}
 
-      <div className="game-legend">
-        <div className="legend-item">
-          <div className="legend-cell">🙅</div>
-          <div className="legend-text">
-            <strong>Dead Zone:</strong> You cannot place a piece where one just vanished.
           </div>
         </div>
-        <div className="legend-item">
-          <div className="legend-cell pulsing">X</div>
-          <div className="legend-text">
-            <strong>Flashing Piece:</strong> The oldest piece on the board. It will vanish next!
+        {/* End of Center Column */}
+
+        {/* The Game Legend stays on the right on desktop, and drops to the bottom on mobile */}
+        <div className="game-legend">
+          <div className="legend-item">
+            <div className="legend-cell">🙅</div>
+            <div className="legend-text">
+              <strong>Dead Zone:</strong> You cannot place a piece where one just vanished.
+            </div>
+          </div>
+          <div className="legend-item">
+            <div className="legend-cell pulsing">X</div>
+            <div className="legend-text">
+              <strong>Flashing Piece:</strong> The oldest piece on the board. It will vanish next!
+            </div>
           </div>
         </div>
+
       </div>
-
-      {gameMode === 'bot' && !winner && (
-         <div className="assist-toggle">
-           <label className="toggle-label">
-             <input type="checkbox" checked={assistMode} onChange={(e) => setAssistMode(e.target.checked)} />
-             <div className="toggle-text">
-               <span className="toggle-maintext">Show Win Probability to Defeat the Bot</span>
-               <span className="toggle-subtext">(based on 100 Monte Carlo simulations per cell)</span>
-             </div>
-           </label>
-         </div>
-      )}
-
-      {(winner || isDraw) && (
-        <button className="reset-button" onClick={resetGame} style={{ marginTop: '20px', padding: '10px 20px', fontSize: '1.2rem', cursor: 'pointer' }}>
-          Play Again
-        </button>
-      )}
+      {/* End of the wrapper */}
     </div>
   );
 }
